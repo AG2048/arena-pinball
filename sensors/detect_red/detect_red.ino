@@ -69,7 +69,6 @@ void loop() {
     delay(1000);
     return;
   }
-  Serial.println("START");
   
   int width = fb->width;
   int height = fb->height;
