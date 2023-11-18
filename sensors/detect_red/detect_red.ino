@@ -1,28 +1,28 @@
 #include "esp_camera.h"
 
-#define PWDN_GPIO_NUM     32
-#define RESET_GPIO_NUM    -1
-#define XCLK_GPIO_NUM      0
-#define SIOD_GPIO_NUM     26
-#define SIOC_GPIO_NUM     27
-#define Y9_GPIO_NUM       35
-#define Y8_GPIO_NUM       34
-#define Y7_GPIO_NUM       39
-#define Y6_GPIO_NUM       36
-#define Y5_GPIO_NUM       21
-#define Y4_GPIO_NUM       19
-#define Y3_GPIO_NUM       18
-#define Y2_GPIO_NUM        5
-#define VSYNC_GPIO_NUM    25
-#define HREF_GPIO_NUM     23
-#define PCLK_GPIO_NUM     22
+#define PWDN_GPIO_NUM 32
+#define RESET_GPIO_NUM - 1
+#define XCLK_GPIO_NUM 0
+#define SIOD_GPIO_NUM 26
+#define SIOC_GPIO_NUM 27
+#define Y9_GPIO_NUM 35
+#define Y8_GPIO_NUM 34
+#define Y7_GPIO_NUM 39
+#define Y6_GPIO_NUM 36
+#define Y5_GPIO_NUM 21
+#define Y4_GPIO_NUM 19
+#define Y3_GPIO_NUM 18
+#define Y2_GPIO_NUM 5
+#define VSYNC_GPIO_NUM 25
+#define HREF_GPIO_NUM 23
+#define PCLK_GPIO_NUM 22
 
 #define RED_THRESHOLD 50
 
-#define OUT_PIN_TL 2   // Top left
-#define OUT_PIN_TR 14  // Top right
-#define OUT_PIN_BL 15  // Bottom left
-#define OUT_PIN_BR 13  // Bottom right
+#define OUT_PIN_TL 2 // Top left
+#define OUT_PIN_TR 14 // Top right
+#define OUT_PIN_BL 15 // Bottom left
+#define OUT_PIN_BR 13 // Bottom right
 
 void setup() {
   pinMode(OUT_PIN_TL, OUTPUT);
@@ -55,14 +55,13 @@ void setup() {
   config.pin_reset = RESET_GPIO_NUM;
   config.xclk_freq_hz = 20000000;
   config.pixel_format = PIXFORMAT_RGB565;
-  
+
   config.frame_size = FRAMESIZE_VGA;
   config.jpeg_quality = 4;
   config.fb_count = 2;
-  
-  
+
   // Initialize the Camera
-  esp_err_t err = esp_camera_init(&config);
+  esp_err_t err = esp_camera_init( & config);
   if (err != ESP_OK) {
     Serial.printf("Camera init failed with error 0x%x. Rebooting...\n", err);
     ESP.restart();
@@ -73,23 +72,23 @@ void loop() {
   // Capture a frame
   camera_fb_t * fb = NULL;
   fb = esp_camera_fb_get();
-  
-  if(!fb) {
+
+  if (!fb) {
     Serial.println("Camera capture failed");
     delay(1000);
     return;
   }
-  
-  int width = fb->width;
-  int height = fb->height;
+
+  int width = fb -> width;
+  int height = fb -> height;
   int sum_x = 0, sum_y = 0, num_red_pixels = 0;
   int cnt = 0;
 
   for (int y = 0; y < height; y++) {
     for (int x = 0; x < width; x++) {
-      int index = y*2*width + 2*x;
-      uint8_t leftPixVal = fb->buf[index];
-      uint8_t rightPixVal = fb->buf[index+1];
+      int index = y * 2 * width + 2 * x;
+      uint8_t leftPixVal = fb -> buf[index];
+      uint8_t rightPixVal = fb -> buf[index + 1];
       uint16_t sixteenBit = (leftPixVal << 8) | rightPixVal;
 
       uint8_t r = sixteenBit >> 11;
@@ -100,12 +99,12 @@ void loop() {
       // b = b << 3;  // Shift left 3 bits to scale from 5 bits to 8 bits
       cnt++;
 
-      if (x == width-1 && y == height-1) {
+      if (x == width - 1 && y == height - 1) {
         // Serial.printf("RGB: %d %d %d, %d\n", red, green, blue, sixteenBit);
         // Serial.printf("%02x%02x = %04x, CNT:%d\n", leftPixVal, rightPixVal, sixteenBit, cnt);
       }
 
-      if(r >= 14 && r <= 31 && g <= 14 && b <= 14){
+      if (r >= 14 && r <= 31 && g <= 14 && b <= 14) {
         sum_x += x;
         sum_y += y;
         num_red_pixels++;
@@ -121,9 +120,9 @@ void loop() {
     int ave_x_rel_pos = avg_x / (width / 10);
     int ave_y_rel_pos = avg_y / (height / 10);
 
-    for(int i = 0; i < 10; i++){
-      for(int j = 0; j < 10; j++){
-        if(i == ave_y_rel_pos && j == ave_x_rel_pos)
+    for (int i = 0; i < 10; i++) {
+      for (int j = 0; j < 10; j++) {
+        if (i == ave_y_rel_pos && j == ave_x_rel_pos)
           Serial.print("X");
         else Serial.print(".");
       }
@@ -135,29 +134,29 @@ void loop() {
     // #define OUT_PIN_BL 14
     // #define OUT_PIN_BR 15
 
-    if (avg_x < width/2 || avg_y < height/2) {
+    if (avg_x < width / 2 || avg_y < height / 2) {
       digitalWrite(OUT_PIN_TL, HIGH);
-          digitalWrite(OUT_PIN_TR, LOW);
-    digitalWrite(OUT_PIN_BL, LOW);
-    digitalWrite(OUT_PIN_BR, LOW);
-    } else if (avg_x >= width/2 && avg_y < height/2) {
+      digitalWrite(OUT_PIN_TR, LOW);
+      digitalWrite(OUT_PIN_BL, LOW);
+      digitalWrite(OUT_PIN_BR, LOW);
+    } else if (avg_x >= width / 2 && avg_y < height / 2) {
       digitalWrite(OUT_PIN_TR, HIGH);
 
-          digitalWrite(OUT_PIN_TL, LOW);
+      digitalWrite(OUT_PIN_TL, LOW);
 
-    digitalWrite(OUT_PIN_BL, LOW);
-    digitalWrite(OUT_PIN_BR, LOW);
-    } else if (avg_x < width/2 && avg_y >= width/2) {
+      digitalWrite(OUT_PIN_BL, LOW);
+      digitalWrite(OUT_PIN_BR, LOW);
+    } else if (avg_x < width / 2 && avg_y >= width / 2) {
       digitalWrite(OUT_PIN_BL, HIGH);
-          digitalWrite(OUT_PIN_TL, LOW);
-    digitalWrite(OUT_PIN_TR, LOW);
+      digitalWrite(OUT_PIN_TL, LOW);
+      digitalWrite(OUT_PIN_TR, LOW);
 
-    digitalWrite(OUT_PIN_BR, LOW);
-    } else if (avg_x >= width/2 && avg_y >= width/2) {
+      digitalWrite(OUT_PIN_BR, LOW);
+    } else if (avg_x >= width / 2 && avg_y >= width / 2) {
       digitalWrite(OUT_PIN_BR, HIGH);
-          digitalWrite(OUT_PIN_TL, LOW);
-    digitalWrite(OUT_PIN_TR, LOW);
-    digitalWrite(OUT_PIN_BL, LOW);
+      digitalWrite(OUT_PIN_TL, LOW);
+      digitalWrite(OUT_PIN_TR, LOW);
+      digitalWrite(OUT_PIN_BL, LOW);
     }
 
     // digitalWrite(OUT_PIN_TL, LOW);
@@ -171,9 +170,9 @@ void loop() {
     Serial.print(avg_y);
     Serial.println(")");
   } else {
-    for(int i = 0; i < 10; i++){
-      for(int j = 0; j < 10; j++){
-	Serial.print(".");
+    for (int i = 0; i < 10; i++) {
+      for (int j = 0; j < 10; j++) {
+        Serial.print(".");
       }
       Serial.print("\n");
     }
@@ -188,7 +187,6 @@ void loop() {
   ..........
   ..........
   */
-
 
   // Once you're done with the frame buffer data, return it back to the driver
   esp_camera_fb_return(fb);
