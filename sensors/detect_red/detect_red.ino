@@ -19,7 +19,17 @@
 
 #define RED_THRESHOLD 50
 
+#define OUT_PIN_TL 2   // Top left
+#define OUT_PIN_TR 14  // Top right
+#define OUT_PIN_BL 15  // Bottom left
+#define OUT_PIN_BR 13  // Bottom right
+
 void setup() {
+  pinMode(OUT_PIN_TL, OUTPUT);
+  pinMode(OUT_PIN_TR, OUTPUT);
+  pinMode(OUT_PIN_BL, OUTPUT);
+  pinMode(OUT_PIN_BR, OUTPUT);
+
   Serial.begin(115200);
   Serial.setDebugOutput(true);
   Serial.println();
@@ -119,7 +129,42 @@ void loop() {
       }
       Serial.print("\n");
     }
-  
+
+    // #define OUT_PIN_TL 4
+    // #define OUT_PIN_TR 2
+    // #define OUT_PIN_BL 14
+    // #define OUT_PIN_BR 15
+
+    if (avg_x < width/2 || avg_y < height/2) {
+      digitalWrite(OUT_PIN_TL, HIGH);
+          digitalWrite(OUT_PIN_TR, LOW);
+    digitalWrite(OUT_PIN_BL, LOW);
+    digitalWrite(OUT_PIN_BR, LOW);
+    } else if (avg_x >= width/2 && avg_y < height/2) {
+      digitalWrite(OUT_PIN_TR, HIGH);
+
+          digitalWrite(OUT_PIN_TL, LOW);
+
+    digitalWrite(OUT_PIN_BL, LOW);
+    digitalWrite(OUT_PIN_BR, LOW);
+    } else if (avg_x < width/2 && avg_y >= width/2) {
+      digitalWrite(OUT_PIN_BL, HIGH);
+          digitalWrite(OUT_PIN_TL, LOW);
+    digitalWrite(OUT_PIN_TR, LOW);
+
+    digitalWrite(OUT_PIN_BR, LOW);
+    } else if (avg_x >= width/2 && avg_y >= width/2) {
+      digitalWrite(OUT_PIN_BR, HIGH);
+          digitalWrite(OUT_PIN_TL, LOW);
+    digitalWrite(OUT_PIN_TR, LOW);
+    digitalWrite(OUT_PIN_BL, LOW);
+    }
+
+    // digitalWrite(OUT_PIN_TL, LOW);
+    // digitalWrite(OUT_PIN_TR, LOW);
+    // digitalWrite(OUT_PIN_BL, LOW);
+    // digitalWrite(OUT_PIN_BR, LOW);
+
     Serial.print("Average location of red pixels: (");
     Serial.print(avg_x);
     Serial.print(", ");
@@ -151,4 +196,11 @@ void loop() {
   // Add a delay between frames
   delay(100);
 }
+/*
+detect object, and LED of the corresponding object light up
 
+I2C
+- data
+- clock
+- look into I2C
+*/
