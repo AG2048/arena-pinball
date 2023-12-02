@@ -1,0 +1,34 @@
+Write a master file
+- include dict, list, array of slave addresses wrt their types
+{1:camera,2:ultrasonic,3: controller, 4: input}
+
+in the master file write about a handler for different types of i/o for the camera and the other modules
+- e.g. make everything "modular"
+- if you wan tto write the LED information to the ELD strip, have a function for that
+
+for master you dont have to write a onReceive
+- just incorporate the wait for transmission thing in side the functions
+
+slave file
+- make different categories
+- make one big file with the functions fo rcamera, ultra, controller, input
+- for each functions corresponing to ^ 
+- basically write some sort of
+
+on recieve()
+	while wire.avail() {
+		read & process data
+	}
+	return data in a format that can be used
+on request(data to be transmitted D)
+	transmission data structure = func(D)	
+	send TDS
+
+2 ways:
+	1. Function call using the transmission data structure or 
+	2. Function call using the raw data structurew
+transmission give you the coordinate or the 8-bit encoding
+the function all is already the transmission data structure
+- user call the function, I transmit the data in this funtion
+
+the goal: send and recieve data from all the perhipherals, but the peripherals have different "data structure"
