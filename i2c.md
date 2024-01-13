@@ -7,6 +7,7 @@
 - Game Process
 - Scoring
 - Game Over
+- Error State (When a microcontroller did not respond or the ball is lost)
 
 ## Devices:
 - Camera
@@ -33,6 +34,10 @@ Output: The CPU sends a message to the device
 
 ### Controller Board (Controlling automatic / player control obstacles)
 - Output: `Current Game State` / `Buttons pressed` / `Relevant Sensor Info`
+
+### Scoreboard
+- Output: `Error State`
+- Output: `Scores`
 
 ### Floor Lights
 - Output: `Floor Light State`
