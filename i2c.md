@@ -32,9 +32,7 @@ Output: The CPU sends a message to the device
 - Input: `Ball Detected` (goal detection & ball retrieval confirmation)
 
 ### Controller Board (Controlling automatic / player control obstacles)
-- Input: `Obstacle ID` + `Obstacle State`
-- Output: `Enable/Disable Automatic Obstacle`
-- Output: `Player Controlled Obstacle ID` + `Player Control Input`
+- Output: `Current Game State` / `Buttons pressed` / `Relevant Sensor Info`
 
 ### Floor Lights
 - Output: `Floor Light State`
@@ -47,5 +45,6 @@ Output: The CPU sends a message to the device
 - Output: `Current Game Score`
 
 ### Player Controls (Joystick, Buttons, etc)
+SPECIAL NOTE: THIS IS HARD WIRED TO THE I2C MASTER - SO NO I2C NEEDED HERE
 - Input: `Player Control Input`
 - Output: `Controller Light State`
