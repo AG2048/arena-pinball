@@ -1,6 +1,7 @@
 # I2C design
 
 ## States:
+We let the master microcontroller to memorize the states, and tell the slave boards what their state is. The boards themselves process this state information.
 - Idle
 - Game Initialize
 - Ball Retrieve
@@ -36,7 +37,7 @@ Output: The CPU sends a message to the device
 - Output: `Current Game State` / `Buttons pressed` / `Relevant Sensor Info`
 
 ### Scoreboard
-- Output: `Error State`
+- Output: `State`
 - Output: `Scores`
 
 ### Floor Lights
