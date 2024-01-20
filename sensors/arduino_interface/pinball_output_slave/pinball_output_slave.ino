@@ -7,11 +7,10 @@
  * GLOBAL VARIABLES: SETUP FOR ALL DEVICES:
  */
 // The address the slave joins the bus
-const int SLAVE_BUS_ADDRESS = 8;
+const int SLAVE_BUS_ADDRESS = 8; // 8-127 is available address
 // The number of bytes the master will request every time
 const int OUTPUT_BYTE_SIZE = 2;
 // Update this function to create uint8_t array to be sent, based on global variables.
-// Update the function argument to include ALL global variables
 uint8_t* output_from_global_variables(){
     static uint8_t output_data[OUTPUT_BYTE_SIZE];
     // Fill data...
@@ -35,6 +34,6 @@ void loop() {
 // Interrupt function run whenever this slave is requested information from master.
 // Prepare output information of size OUTPUT_BYTE_SIZE using output_from_global_variables based on global variables.
 void requestEvent() {
-  uint8_t* outputData = getStaticData();
+  uint8_t* outputData = output_from_global_variables();
   Wire.write(outputData);
 }
