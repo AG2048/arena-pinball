@@ -6,7 +6,7 @@
 /*
  * GLOBAL VARIABLES: SETUP FOR ALL DEVICES:
  */
-const int SLAVE_BUS_ADDRESS = 8;
+const int SLAVE_BUS_ADDRESS = 8; // 8-127 is available address
 // Update this function to update global variables based on user input
 void input_update_global_variables(uint8_t list[], size_t list_size){
   // TODO
