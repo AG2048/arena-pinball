@@ -1,5 +1,5 @@
 /*
- * This code is for any slave microcontroller that will only receive information FROM the master, this is DIFFERENT naming convention from the i2c.md file.
+ * This code is for any slave microcontroller that will only output information TO the master, this is DIFFERENT naming convention from the i2c.md file.
  */
 #include <Wire.h>
 
