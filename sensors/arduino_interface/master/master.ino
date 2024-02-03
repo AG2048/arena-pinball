@@ -28,6 +28,12 @@ Error code system
 #define WINNER 60
 #define ERROR -99
 
+bool start_button = 0;
+int home = 0;  // Left or right goal
+int away = 0;  // Left or right goal
+int win = 0;  // If there is a winner
+int current_state = POWER_ON;
+
 #include <Wire.h>
 
 void setup() {
@@ -37,6 +43,72 @@ void setup() {
 
 int x = 0;
 
+void loop() {
+  /*
+  #define POWER_ON 10
+  #define IDLE 20
+  #define GAME_INIT 30
+  #define GAME_PROCESS 40
+  #define GAME_OVER 50
+  #define WINNER 60
+  #define ERROR -99
+  */
+
+  // FSM Control
+  // TODO maybe no use for break, because it can be only in one case
+  switch (current_state) {
+    case IDLE:
+      if (button)
+        current_state = GAME_INIT;
+      // Else, current_state = IDLE still
+      break;
+    case GAME_INIT:
+      current_state = GAME_PROCESS;
+      break;
+    case GAME_PROCESS:
+      // Either one true for score
+      if (home || away) {
+        current_state = GAME_OVER;
+      }
+      // Else, current_state = GAME_PROCESS
+      break;
+    case GAME_OVER:
+      if (win)
+        current_state = WINNER;
+      else
+        current_state = GAME_INIT;
+      break;
+    case WINNER:
+      current_state = IDLE;
+      break;
+    default:
+      current_state = IDLE;
+      // code block
+  }
+
+  // FSM Action
+  switch (current_state) {
+    case IDLE:
+      // Code for IDLE
+      break;
+    case GAME_INIT:
+      // Code for GAME_INIT
+      break;
+    case GAME_PROCESS:
+      // Code for GAME_PROCESS
+      break;
+    case GAME_OVER:
+      // Code for GAME_OVER
+      break;
+    case WINNER:
+      // Cod for WINNER
+      break;
+    default:
+      // ???
+  }
+}
+
+/*
 void loop()
 {
   // First, blink 5 times
@@ -72,3 +144,4 @@ void loop()
   // 5 second delay
   delay(5000);
 }
+*/
