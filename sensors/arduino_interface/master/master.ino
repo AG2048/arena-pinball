@@ -20,6 +20,14 @@ Error code system
 - Slave: respond the error code
 */
 
+#define POWER_ON 10
+#define IDLE 20
+#define GAME_INIT 30
+#define GAME_PROCESS 40
+#define GAME_OVER 50
+#define WINNER 60
+#define ERROR -99
+
 #include <Wire.h>
 
 void setup() {
