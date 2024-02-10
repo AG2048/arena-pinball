@@ -10,6 +10,9 @@ typedef void (*FunctionPointer)();
  * GLOBAL VARIABLES: SETUP FOR EACH SLAVE DEVICES
  */
 // Different states the slave microcontroller should
+// Store the information output from each slave
+// One int per slave
+// The index matches the index variable in each SampleSlave... function
 const int[] SLAVE_STATES = {
 
 }
@@ -23,7 +26,19 @@ void sampleSlaveInputFromMaster() {
   // Transmit to slave
   Wire.beginTransmission(address);
   // Wire.write() function goes here
-  Wire.endTransmission
+  // Wire.write() function goes here
+  // Wire.write() function goes here
+  // Wire.write() function goes here
+  // Wire.write() function goes here
+  // Write state index address-8
+  /*process SLAVE_STATES[index] into a sendable format*/
+  /*wire.write(that)*/
+  // Wire.write() function goes here
+  // Wire.write() function goes here
+  // Wire.write() function goes here
+  // Wire.write() function goes here
+  // Wire.write() function goes here
+  Wire.endTransmission();
 }
 void sampleSlaveOutputToMaster() {
   int address = 9;
@@ -44,6 +59,8 @@ const int NUMBER_OF_SLAVES = 2;
 // Array of functions to execute when processing each slave microcontroller
 // We will iterate through this array and run each function
 const FunctionPointer SLAVE_FUNCTIONS = {
+  // Input slave may and should receive diff inputs if gamestate changes (e.g.
+  // paddle should not work during idle state)
   sampleSlaveInputFromMaster,
   sampleSlaveOutputToMaster
 };
@@ -58,6 +75,10 @@ void setup() {
 }
 
 void loop() {
+  // MOVE FSM HERE
+  /*FSM state change code*/
+  /*the loop thru all funciosn and run them*/
+  /*each function - will call the state and figure out what they should do based on the state*/
   for(int i = 0; i < NUMBER_OF_SLAVES; i++){
     SLAVE_FUNCTIONS[i]();
   }
