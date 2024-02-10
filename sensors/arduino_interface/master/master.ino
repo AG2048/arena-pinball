@@ -20,6 +20,7 @@ Error code system
 - Slave: respond the error code
 */
 
+// TODO is enum better
 #define POWER_ON 10
 #define IDLE 20
 #define GAME_INIT 30
