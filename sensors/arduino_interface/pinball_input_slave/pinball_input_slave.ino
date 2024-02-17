@@ -3,13 +3,16 @@
  */
 #include <Wire.h>
 
+int state = 0;
+
 /*
  * GLOBAL VARIABLES: SETUP FOR ALL DEVICES:
  */
-const int SLAVE_BUS_ADDRESS = 8; // 8-127 is available address
+const int SLAVE_BUS_ADDRESS = 9; // 8-127 is available address
 // Update this function to update global variables based on user input
 void input_update_global_variables(uint8_t list[], size_t list_size){
   // TODO
+  state = list[0];
   return;
 }; 
 
@@ -19,12 +22,14 @@ void setup() {
   // Define the interrupt onReceive function
   Wire.onReceive(receiveEvent); 
   // Serial Connection
+  pinMode(LED_BUILTIN, OUTPUT);
   Serial.begin(9600);           
 }
 
 void loop() {
+  digitalWrite(LED_BUILTIN, state);
   // Perform Normal Function Here
-  delay(100)
+  delay(100);
 }
 
 // Interrupt function run whenever this slave received information from master.
@@ -35,5 +40,5 @@ void receiveEvent(int howMany) {
   while(Wire.available()) {
     input_data[index++] = Wire.read(); // receive byte
   }
-  input_update_global_variables(input_data, list_size);
+  input_update_global_variables(input_data, howMany);
 }
