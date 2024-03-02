@@ -54,3 +54,10 @@ Output: The CPU sends a message to the device
 SPECIAL NOTE: THIS IS HARD WIRED TO THE I2C MASTER - SO NO I2C NEEDED HERE
 - Input: `Player Control Input`
 - Output: `Controller Light State`
+
+## Expected Input
+
+### Obstacles
+- 0: state
+- 1-3: x-coordinate (expecting integer less then 2048)
+- 4-6: y-coordinate (expecting integer less than 2048)
