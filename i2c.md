@@ -2,12 +2,15 @@
 
 ## States:
 We let the master microcontroller to memorize the states, and tell the slave boards what their state is. The boards themselves process this state information.
+- Power On
 - Idle
 - Game Initialize
-- Ball Retrieve
-- Game Process
+- Game Process (ball in field, no score yet)
 - Scoring
-- Game Over
+- Ball retrieval in process
+- Game Over (Left wins)
+- Game Over (Right wins)
+- Game Over (No winner)
 - Error State (When a microcontroller did not respond or the ball is lost)
 
 ## Devices:
