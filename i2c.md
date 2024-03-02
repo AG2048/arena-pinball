@@ -56,6 +56,11 @@ SPECIAL NOTE: THIS IS HARD WIRED TO THE I2C MASTER - SO NO I2C NEEDED HERE
 - Output: `Controller Light State`
 
 ## Expected Input
+Format: 
+
+Board - Input to Master/Output from Master - byte number: purpose
+
+The CPU should only "keep track" of states, and send the states to all output devices.
 
 ### Obstacles
 - 0: state
