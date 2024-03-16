@@ -13,10 +13,19 @@ enum stateType {
   GAME_INIT,
   GAME_PROCESS,
   SCORING,
-  BALL_RETRIEVAL,
+  BALL_RETRIEVAL_IN_PROGRESS,
+  GAME_OVER_LEFT_WIN,
+  GAME_OVER_RIGHT_WIN,
+  GAME_OVER_TIE,
   WINNER,
-  ERROR = -1
-};
+  NUM_STATES,
+  ERROR = -1,
+} current_state = POWER_ON;
+
+bool start_button_pressed = 0;
+bool ball_pass_through_net = 0;
+bool timeout = 0;
+bool ball_ready_dispensing = 0;
 
 /* 
  * GLOBAL VARIABLES: SETUP FOR EACH SLAVE DEVICES
@@ -91,33 +100,33 @@ void loop() {
   switch (current_state) {
     case POWER_ON:
       current_state = IDLE;
+      break;
     case IDLE:
-      if (button)
+      if (start_button_pressed)
         current_state = GAME_INIT;
-        // Else, current_state = IDLE still
+      // Otherwise the pinball machine is still in IDLE mode
       break;
     case GAME_INIT:
       current_state = GAME_PROCESS;
       break;
     case GAME_PROCESS:
-      // Either one true for score
-      if (home || away) {
-        current_state = GAME_OVER;
-      }
-      // Else, current_state = GAME_PROCESS
+      // If ball pass through the net
+      // Check scoring first before timeout (because buzzer beaters)
+      if (ball_pass_through_net)
+        current_state = SCORING;
+      if (timeout)
+        current_state = IDLE
+      // If ball doesn't pass through the net, the game goes on
+      // If time limit is also not exceeded, the game goes on as well
       break;
     case SCORING:
-      if (win)
-        current_state = WINNER;
-      else
-        current_state = GAME_INIT;
+      if (ball_ready_dispensing)
+        current_state = BALL_RETRIEVAL_IN_PROGRESS
       break;
-    case WINNER:
-      current_state = IDLE;
-      break;
-    default:
-      current_state = IDLE;
-      // code block
+    case BALL_RETRIEVAL_IN_PROGRESS:
+      // Delay some time to allow animations and flashing lights
+      // delay(1000);
+      current_state = GAME_PROCESS
   }
 
   /*FSM state change code*/
