@@ -6,6 +6,18 @@
 // Define the function signature
 typedef void (*FunctionPointer)();
 
+// Enum for gamestates
+enum stateType {
+  POWER_ON,
+  IDLE,
+  GAME_INIT,
+  GAME_PROCESS,
+  SCORING,
+  BALL_RETRIEVAL,
+  WINNER,
+  ERROR = -1
+};
+
 /* 
  * GLOBAL VARIABLES: SETUP FOR EACH SLAVE DEVICES
  */
@@ -76,6 +88,38 @@ void setup() {
 
 void loop() {
   // MOVE FSM HERE
+  switch (current_state) {
+    case POWER_ON:
+      current_state = IDLE;
+    case IDLE:
+      if (button)
+        current_state = GAME_INIT;
+        // Else, current_state = IDLE still
+      break;
+    case GAME_INIT:
+      current_state = GAME_PROCESS;
+      break;
+    case GAME_PROCESS:
+      // Either one true for score
+      if (home || away) {
+        current_state = GAME_OVER;
+      }
+      // Else, current_state = GAME_PROCESS
+      break;
+    case SCORING:
+      if (win)
+        current_state = WINNER;
+      else
+        current_state = GAME_INIT;
+      break;
+    case WINNER:
+      current_state = IDLE;
+      break;
+    default:
+      current_state = IDLE;
+      // code block
+  }
+
   /*FSM state change code*/
   /*the loop thru all funciosn and run them*/
   /*each function - will call the state and figure out what they should do based on the state*/

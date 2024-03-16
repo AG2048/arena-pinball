@@ -2,12 +2,15 @@
 
 ## States:
 We let the master microcontroller to memorize the states, and tell the slave boards what their state is. The boards themselves process this state information.
+- Power On
 - Idle
 - Game Initialize
-- Ball Retrieve
-- Game Process
+- Game Process (ball in field, no score yet)
 - Scoring
-- Game Over
+- Ball retrieval in process
+- Game Over (Left wins)
+- Game Over (Right wins)
+- Game Over (No winner)
 - Error State (When a microcontroller did not respond or the ball is lost)
 
 ## Devices:
@@ -56,6 +59,11 @@ SPECIAL NOTE: THIS IS HARD WIRED TO THE I2C MASTER - SO NO I2C NEEDED HERE
 - Output: `Controller Light State`
 
 ## Expected Input
+Format: 
+
+Board - Input to Master/Output from Master - byte number: purpose
+
+The CPU should only "keep track" of states, and send the states to all output devices.
 
 ### Obstacles
 - 0: state
