@@ -13,7 +13,6 @@ const int SLAVE_BUS_ADDRESS = 9; // 8-127 is available address
 void input_update_global_variables(uint8_t list[], size_t list_size){
   // TODO
   state = list[0];
-  solState = list[1];
   return;
 }; 
 
@@ -32,13 +31,11 @@ void setup() {
 void loop() {
   digitalWrite(LED_BUILTIN, state);
 
-  if (!solState) {
+  if (!state) {
     digitalWrite(8, LOW);
   } else {
     digitalWrite(8, HIGH);
   }
-
-  delay(1000);
 }
 
 // Interrupt function run whenever this slave received information from master.

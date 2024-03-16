@@ -25,12 +25,12 @@ enum stateType {
 // Store the information output from each slave
 // One int per slave
 // The index matches the index variable in each SampleSlave... function
-int SLAVE_STATES[1] = {0};
+bool SLAVE_STATES[1] = {false};
 
 // Functions used for slaves (One for each)
 void sampleSlaveInputFromMaster() {
   int address = 9;
-  int informationByteLength = 2; // how many bytes long is each transmission
+  int informationByteLength = 1; // how many bytes long is each transmission
   int index = address-8; // because address starts on 8
 
   // Transmit to slave
@@ -43,7 +43,6 @@ void sampleSlaveInputFromMaster() {
   // Write state index address-8
   /*process SLAVE_STATES[index] into a sendable format*/
   Wire.write(SLAVE_STATES[0]);
-  Wire.write(1);
   // Wire.write() function goes here
   // Wire.write() function goes here
   // Wire.write() function goes here
@@ -78,18 +77,19 @@ const FunctionPointer SLAVE_FUNCTIONS[NUMBER_OF_SLAVES] = {
 };
 
 
-
+int counter = 0;
 void setup() {
   // Start the I2C connection as the master
   Wire.begin();
   // Serial Connection
   Serial.begin(9600);
   pinMode(LED_BUILTIN, OUTPUT);
+  
 }
 
 void loop() {
   // MOVE FSM HERE
-  switch (current_state) {
+  /*switch (current_state) {
     case POWER_ON:
       current_state = IDLE;
     case IDLE:
@@ -119,7 +119,12 @@ void loop() {
     default:
       current_state = IDLE;
       // code block
-  }
+  }*/
+
+  counter++;
+  if (counter % 1000 == 0) {
+    SLAVE_STATES[0] = !SLAVE_STATES[0];
+  } 
 
   /*FSM state change code*/
   /*the loop thru all funciosn and run them*/
@@ -128,4 +133,5 @@ void loop() {
     SLAVE_FUNCTIONS[i]();
   }
   digitalWrite(LED_BUILTIN, SLAVE_STATES[0]);
+  delay(1);
 }
