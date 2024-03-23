@@ -12,7 +12,8 @@ enum stateType {
   IDLE,
   GAME_INIT,
   GAME_PROCESS,
-  SCORING,
+  LEFT_SCORING,
+  RIGHT_SCORING,
   BALL_RETRIEVAL_IN_PROGRESS,
   GAME_OVER_LEFT_WIN,
   GAME_OVER_RIGHT_WIN,
@@ -22,10 +23,14 @@ enum stateType {
   ERROR = -1,
 } current_state = POWER_ON;
 
+int	MAX_SCORE = 10;
 bool start_button_pressed = 0;
-bool ball_pass_through_net = 0;
 bool timeout = 0;
 bool ball_ready_dispensing = 0;
+bool ball_pass_through_left_net = 0;
+bool ball_pass_through_right_net = 0;
+int left_score = 0;
+int right_score = 0;
 
 /* 
  * GLOBAL VARIABLES: SETUP FOR EACH SLAVE DEVICES
@@ -99,6 +104,7 @@ void loop() {
   // MOVE FSM HERE
   switch (current_state) {
     case POWER_ON:
+      delay(1000);
       current_state = IDLE;
       break;
     case IDLE:
@@ -107,26 +113,68 @@ void loop() {
       // Otherwise the pinball machine is still in IDLE mode
       break;
     case GAME_INIT:
+      // Play some sounds, dispense ball
+      // TODO wait for some confirmation
+      // TODO wait for ball in ball retrieval
+      delay(3000);
       current_state = GAME_PROCESS;
       break;
     case GAME_PROCESS:
-      // If ball pass through the net
       // Check scoring first before timeout (because buzzer beaters)
-      if (ball_pass_through_net)
-        current_state = SCORING;
-      if (timeout)
-        current_state = IDLE
+      if (ball_pass_through_left_net) {
+        left_score++;
+        if (left_score >= MAX_SCORE) {
+          current_state = GAME_OVER_LEFT_WIN;
+        }
+        current_state = LEFT_SCORING;
+      }
+      if (ball_pass_through_right_net) {
+        right_score++;
+        if (right_score >= MAX_SCORE) {
+          current_state = GAME_OVER_RIGHT_WIN;
+        }
+        current_state = RIGHT_SCORING;
+      }
+      if (timeout) {
+        // current_state = GAME_PROCESS if the ball hasn't passed through the
+        // net
+        if (left_score > right_score) {
+          current_state = GAME_OVER_LEFT_WIN;
+        } else if (left_score < right_score) {
+          current_state = GAME_OVER_RIGHT_WIN;
+        } else {
+          current_state = GAME_OVER_TIE;
+        }
+      }
       // If ball doesn't pass through the net, the game goes on
       // If time limit is also not exceeded, the game goes on as well
       break;
-    case SCORING:
+    case GAME_OVER_RIGHT_WIN;
+      delay(5000);
+      current_state = IDLE;
+      break;
+    case GAME_OVER_LEFT_WIN;
+      delay(5000);
+      current_state = IDLE;
+      break;
+    case GAME_OVER_TIE;
+      delay(5000);
+      current_state = IDLE;
+      break;
+    case LEFT_SCORING:
+      if (ball_ready_dispensing)
+        current_state = BALL_RETRIEVAL_IN_PROGRESS
+      break;
+    case RIGHT_SCORING:
       if (ball_ready_dispensing)
         current_state = BALL_RETRIEVAL_IN_PROGRESS
       break;
     case BALL_RETRIEVAL_IN_PROGRESS:
       // Delay some time to allow animations and flashing lights
       // delay(1000);
-      current_state = GAME_PROCESS
+      if (ball_back_on_field)
+        current_state = GAME_PROCESS
+      break;
   }
 
   /*FSM state change code*/
