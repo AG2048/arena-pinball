@@ -103,6 +103,18 @@ void setup() {
 void loop() {
   // MOVE FSM HERE
   switch (current_state) {
+    // When ball is getting dispensed
+    // (B1) go through the net
+    // (B2) in front of the solenoid
+    // (B3) push it back onto the field
+
+    // Having delays in the cases VALID, the master code doesn't have to worry
+    // about "no multithreading" issue
+    // e.g. After GAME_INIT, send the GAME_INIT state, delay for 5000 to wait
+    // for another MCU to control the lights
+    // e.g. After GAME_OVER_RIGHT_WIN, send the GAME_OVER_RIGHT_WIN state to
+    // wait for another MCU to control the lights and also for the ball to
+    // physically roll in front of the dispensing solenoid
 
     case POWER_ON:
     {
@@ -122,9 +134,10 @@ void loop() {
     case GAME_INIT:
     {
       // Play some sounds, dispense ball
+      // Ball is in B2
       // TODO wait for some confirmation
       // TODO wait for ball in ball retrieval
-      delay(3000);
+      delay(3000);  // The display is probably done on a separate board
       current_state = GAME_PROCESS;
       break;
     }
@@ -147,8 +160,7 @@ void loop() {
         current_state = RIGHT_SCORING;
       }
       if (timeout) {
-        // current_state = GAME_PROCESS if the ball hasn't passed through the
-        // net
+        // current_state = GAME_PROCESS if the ball hasn't passed through the net
         if (left_score > right_score) {
           current_state = GAME_OVER_LEFT_WIN;
         } else if (left_score < right_score) {
