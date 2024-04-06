@@ -162,7 +162,7 @@ void loop() {
       break;
     }
 
-    case GAME_OVER_RIGHT_WIN;
+    case GAME_OVER_RIGHT_WIN:
     {
       delay(5000);
       current_state = IDLE;
