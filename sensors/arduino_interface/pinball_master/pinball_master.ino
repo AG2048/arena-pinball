@@ -198,14 +198,14 @@ void loop() {
     case LEFT_SCORING:
     {
       if (ball_ready_dispensing)
-        current_state = BALL_RETRIEVAL_IN_PROGRESS
+        current_state = BALL_RETRIEVAL_IN_PROGRESS;
       break;
     }
 
     case RIGHT_SCORING:
     {
       if (ball_ready_dispensing)
-        current_state = BALL_RETRIEVAL_IN_PROGRESS
+        current_state = BALL_RETRIEVAL_IN_PROGRESS;
       break;
     }
 
@@ -214,7 +214,7 @@ void loop() {
         // Delay some time to allow animations and flashing lights
         // delay(1000);
         if (ball_back_on_field)
-          current_state = GAME_PROCESS
+          current_state = GAME_PROCESS;
         break;
     }
   }
