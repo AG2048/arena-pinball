@@ -90,8 +90,6 @@ const FunctionPointer SLAVE_FUNCTIONS[NUMBER_OF_SLAVES] = {
   sampleSlaveOutputToMaster
 };
 
-
-
 void setup() {
   // Start the I2C connection as the master
   Wire.begin();
