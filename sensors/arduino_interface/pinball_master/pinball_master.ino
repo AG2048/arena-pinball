@@ -23,7 +23,7 @@ enum stateType {
   ERROR = -1,
 } current_state = POWER_ON;
 
-int	MAX_SCORE = 10;
+int MAX_SCORE = 10;
 bool start_button_pressed = 0;
 bool timeout = 0;
 bool ball_ready_dispensing = 0;
@@ -103,23 +103,34 @@ void setup() {
 void loop() {
   // MOVE FSM HERE
   switch (current_state) {
+
     case POWER_ON:
+    {
       delay(1000);
       current_state = IDLE;
       break;
+    }
+
     case IDLE:
+    {
       if (start_button_pressed)
         current_state = GAME_INIT;
       // Otherwise the pinball machine is still in IDLE mode
       break;
+    }
+
     case GAME_INIT:
+    {
       // Play some sounds, dispense ball
       // TODO wait for some confirmation
       // TODO wait for ball in ball retrieval
       delay(3000);
       current_state = GAME_PROCESS;
       break;
+    }
+
     case GAME_PROCESS:
+    {
       // Check scoring first before timeout (because buzzer beaters)
       if (ball_pass_through_left_net) {
         left_score++;
@@ -149,32 +160,51 @@ void loop() {
       // If ball doesn't pass through the net, the game goes on
       // If time limit is also not exceeded, the game goes on as well
       break;
+    }
+
     case GAME_OVER_RIGHT_WIN;
+    {
       delay(5000);
       current_state = IDLE;
       break;
+    }
+
     case GAME_OVER_LEFT_WIN;
+    {
       delay(5000);
       current_state = IDLE;
       break;
+    }
+
     case GAME_OVER_TIE;
+    {
       delay(5000);
       current_state = IDLE;
       break;
+    }
+
     case LEFT_SCORING:
+    {
       if (ball_ready_dispensing)
         current_state = BALL_RETRIEVAL_IN_PROGRESS
       break;
+    }
+
     case RIGHT_SCORING:
+    {
       if (ball_ready_dispensing)
         current_state = BALL_RETRIEVAL_IN_PROGRESS
       break;
+    }
+
     case BALL_RETRIEVAL_IN_PROGRESS:
-      // Delay some time to allow animations and flashing lights
-      // delay(1000);
-      if (ball_back_on_field)
-        current_state = GAME_PROCESS
-      break;
+    {
+        // Delay some time to allow animations and flashing lights
+        // delay(1000);
+        if (ball_back_on_field)
+          current_state = GAME_PROCESS
+        break;
+    }
   }
 
   /*FSM state change code*/
