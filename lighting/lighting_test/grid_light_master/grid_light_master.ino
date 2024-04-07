@@ -12,11 +12,25 @@ enum stateType {
   IDLE,
   GAME_INIT,
   GAME_PROCESS,
-  SCORING,
-  BALL_RETRIEVAL,
+  LEFT_SCORING,
+  RIGHT_SCORING,
+  BALL_RETRIEVAL_IN_PROGRESS,
+  GAME_OVER_LEFT_WIN,
+  GAME_OVER_RIGHT_WIN,
+  GAME_OVER_TIE,
   WINNER,
-  ERROR = -1
-};
+  NUM_STATES,
+  ERROR = -1,
+} current_state = POWER_ON;
+
+int	MAX_SCORE = 10;
+bool start_button_pressed = 0;
+bool timeout = 0;
+bool ball_ready_dispensing = 0;
+bool ball_pass_through_left_net = 0;
+bool ball_pass_through_right_net = 0;
+int left_score = 0;
+int right_score = 0;
 
 /* 
  * GLOBAL VARIABLES: SETUP FOR EACH SLAVE DEVICES
@@ -26,8 +40,7 @@ enum stateType {
 // One int per slave
 // The index matches the index variable in each SampleSlave... function
 uint8_t SLAVE_STATES[1] = {0};
-uint16_t pos[2] = {1, 1};
-int count = 0;
+uint16_t pos[2] = {0, 0}
 
 // Functions used for slaves (One for each)
 void sampleSlaveInputFromMaster() {
@@ -45,7 +58,6 @@ void sampleSlaveInputFromMaster() {
   // Write state index address-8
   /*process SLAVE_STATES[index] into a sendable format*/
   Wire.write(SLAVE_STATES[0]);
-  // Position numbers are 2 bytes, being split to send to slave
   Wire.write(pos[0] >> 8);
   Wire.write(pos[0] & 0xFF);
   Wire.write(pos[1] >> 8);
@@ -83,7 +95,7 @@ const FunctionPointer SLAVE_FUNCTIONS[NUMBER_OF_SLAVES] = {
   sampleSlaveOutputToMaster
 };
 
-
+int count = 0;
 
 void setup() {
   // Start the I2C connection as the master
@@ -94,15 +106,13 @@ void setup() {
 }
 
 void loop() {
-  // MOVE FSM HERE
-
-  if ((count/2000) % 2 == 0) {
+  if (count % 2000 == 0) {
     pos[0] = 1;
     pos[1] = 1;
     digitalWrite(LED_BUILTIN, HIGH);
   } else {
     pos[0] = 3;
-    pos[1] = 3;
+    pos[1] = 2;
     digitalWrite(LED_BUILTIN, LOW);
   }
 

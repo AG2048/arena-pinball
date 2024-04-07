@@ -2,12 +2,11 @@
  * This code is for any slave microcontroller that will only receive information FROM the master, this is DIFFERENT naming convention from the i2c.md file.
  */
 #include <Wire.h>
-#include <FastLED.h>
 
-const int len = 8, numLedStrips = 4;
+const int len = 8, numLed = 6;
 int state = 0;
-int pos[2];
-struct CRGB leds[numLedStrips][len];
+int pos[2] = {0, 0};
+struct CRGB leds[numLed][len];
 
 /*
  * GLOBAL VARIABLES: SETUP FOR ALL DEVICES:
@@ -41,13 +40,9 @@ void setup() {
 void loop() {
   digitalWrite(LED_BUILTIN, state);
   // Perform Normal Function Here
-
-  for (int i = 0; i < numLedStrips; i++) for (int j = 0; j < len; j++) leds[i][j] = CRGB(0, 0, 0);
+  for (int i = 0; i < numLed; i++) for (int j = 0; j < len; j++) leds[i][j] = CRGB(0, 0, 0);
   leds[pos[0]][pos[1]] = CRGB(255, 0, 0);
-
   FastLED.show();
-
-  delay(100);
 }
 
 // Interrupt function run whenever this slave received information from master.
