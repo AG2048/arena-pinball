@@ -51,6 +51,7 @@ void sampleSlaveInputFromMaster() {
   // Wire.write() function goes here
   Wire.endTransmission();
 }
+
 void sampleSlaveOutputToMaster() {
   int address = 8;
   int informationByteLength = 1; // how many bytes long is each transmission
@@ -66,15 +67,69 @@ void sampleSlaveOutputToMaster() {
   // SLAVE_STATES[index_of_slave_affected] = whatever
 }
 
+void cameraSlaveOutputToMaster() {
+  const int address = 10;
+  const int informationByteLength = 11;
+  // TODO: So each index correspond to one slave?
+  const int index = address-8; // because address starts on 8
+  const int buf_size = informationByteLength * 6;
+  const int X_MAX = 1640;
+  const int Y_MAX = 1232;
+
+  char buf[buf_size] = {0};
+  do {
+    Wire.requestFrom(address, informationByteLength); 
+    int i = 0;
+    while (Wire.available()) { // While data is available to read
+      char c = Wire.read(); // Read a byte from the I2C buffer
+      buf[i] = c;
+      i++;
+    }
+    buf[i] = NULL;
+    Serial.print("Received from camera slave: ");
+    Serial.print(buf);
+    Serial.print("\n");
+    if (i != informationByteLength) {
+      Serial.println("Camera is not responding");
+      return;
+    }
+
+    // RaspPi i2c is unreliable, so we check to see the msg is in correct format
+    if (buf[0] == ':' && buf[6] == ':') {
+      break;
+    } 
+
+    // Otherwise "overconsume" the pigpiod buffer to reset it
+    Wire.requestFrom(address, informationByteLength * 5); 
+    Serial.print("Resetting buffer of camera slave\n");
+    while (Wire.available()) {
+      char c = Wire.read();
+      Serial.print(c);
+    }
+    Serial.print("\n");
+  } while (true);
+
+  buf[6] = NULL;
+  const int x_coord = String(buf + 1).toInt();
+  const int y_coord = String(buf + 7).toInt();
+  Serial.print("Parsed coordinates from camera slave: ");
+  Serial.print(x_coord);
+  Serial.print(";");
+  Serial.println(y_coord);
+
+  // TODO: For now we just set SLAVE_STATES[0] to a new value (whatever SLAVE_STATES even means)
+  SLAVE_STATES[0] = x_coord > X_MAX * 0.8;
+}
 // Number of slave boards to connect to
-const int NUMBER_OF_SLAVES = 2; 
+const int NUMBER_OF_SLAVES = 3; 
 // Array of functions to execute when processing each slave microcontroller
 // We will iterate through this array and run each function
 const FunctionPointer SLAVE_FUNCTIONS[NUMBER_OF_SLAVES] = {
   // Input slave may and should receive diff inputs if gamestate changes (e.g.
   // paddle should not work during idle state)
   sampleSlaveInputFromMaster,
-  sampleSlaveOutputToMaster
+  sampleSlaveOutputToMaster,
+  cameraSlaveOutputToMaster
 };
 
 
@@ -122,10 +177,10 @@ void loop() {
       // code block
   }*/
 
-  counter++;
-  if (counter % 1000 == 0) {
-    SLAVE_STATES[0] = !SLAVE_STATES[0];
-  } 
+  // counter++;
+  // if (counter % 1000 == 0) {
+  //   SLAVE_STATES[0] = !SLAVE_STATES[0];
+  // } 
 
   /*FSM state change code*/
   /*the loop thru all funciosn and run them*/
@@ -137,37 +192,4 @@ void loop() {
   delay(1);
 }
 
-// Old code used as arduino master with rasp pi camera slave
-// const int SLAVE_ADDR = 9;
-// const int BUF_SIZE = 64;
-// const int NUM_BYTE_REQUEST = 11;
-
-// void loop() {
-//   char buf[BUF_SIZE] = {0};
-
-//   Wire.requestFrom(SLAVE_ADDR, NUM_BYTE_REQUEST); 
-//   int i = 0;
-//   while (Wire.available()) { // While data is available to read
-//     char c = Wire.read(); // Read a byte from the I2C buffer
-//     buf[i] = c;
-//     i++;
-//   }
-//   Serial.print("Received: ");
-//   Serial.print(buf);
-//   Serial.print("\n");
-
-//   if (buf[0] != ':' || buf[6] != ':') {
-//     Wire.requestFrom(SLAVE_ADDR, NUM_BYTE_REQUEST * 5); 
-//     Serial.print("Resetting buffer\n");
-//     int i = 0;
-//     while (Wire.available()) { // While data is available to read
-//       char c = Wire.read(); // Read a byte from the I2C buffer
-//       Serial.print(c); // Print the byte to the serial monitor
-//       i++;
-//     }
-//     Serial.print("\n");
-//   }
-  
-//   delay(100); // Wait for 1 second before requesting data again
-// }
 
