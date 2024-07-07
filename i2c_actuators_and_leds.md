@@ -47,6 +47,8 @@ LED will light up based on the state it received.
 
 Each LED will be represented in slave code as an enum.
 
+Make an array, using the LED enum as index, that stores the LED's start index and end index so a function can easily control the LEDs. (Example: start[i] and end[i] and lighting_states[i] and states[i], we make the LED strip between index start[i] and end[i] change based on lighting_states[i] and states[i], here states[i] is the general instruction, and lighting_states[i] records specific light of each LED)
+
 Each LED state will be coded as an enum.
 
 #### LED STATES
