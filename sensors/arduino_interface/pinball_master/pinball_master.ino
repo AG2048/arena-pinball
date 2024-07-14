@@ -2,6 +2,7 @@
  * This code is for the master i2c microcontroller
  */
 #include <Wire.h>
+#include <vector>
 
 // Define the function signature
 typedef void (*FunctionPointer)();
@@ -18,11 +19,11 @@ enum stateType {
   GAME_OVER_LEFT_WIN,
   GAME_OVER_RIGHT_WIN,
   GAME_OVER_TIE,
-  WINNER,
   NUM_STATES,
   ERROR = -1,
 } current_state = POWER_ON;
 
+// Game state global variables
 int MAX_SCORE = 10;
 bool start_button_pressed = 0;
 bool timeout = 0;
@@ -32,14 +33,114 @@ bool ball_pass_through_right_net = 0;
 int left_score = 0;
 int right_score = 0;
 
-/* 
+/*******************************************************************************************
  * GLOBAL VARIABLES: SETUP FOR EACH SLAVE DEVICES
- */
+ *******************************************************************************************/
 // Different states the slave microcontroller should
 // Store the information output from each slave
 // One int per slave
 // The index matches the index variable in each SampleSlave... function
-int SLAVE_STATES[1] = {0};
+enum slaveIndex {
+  RASPI_SLAVE_INDEX,
+  ACTUATOR_CONTROLLER_SLAVE_INDEX,
+  LED_CONTROLLER_SLAVE_INDEX,
+  NUM_SLAVES
+};
+std::vector<std::vector<int>> SLAVE_STATES(NUM_SLAVES);
+enum raspiIndex {
+  X_COORDINATE_INDEX,
+  Y_COORDINATE_INDEX,
+  RED_SCORE_INDEX,
+  BLUE_SCORE_INDEX,
+  NUM_RASPI_STATES
+};
+SLAVE_STATES[RASPI_SLAVE_INDEX] = {
+    // Raspi States (I2C Address 8)
+    0, // x-coordinate of ball
+    0, // y-coordinate of ball (0,0 coordinate is ball not found)
+    0, // RED Score 
+    0 // BLUE Score
+};
+enum actuatorIndex {
+  RED_LEFT_BUMPER_ACTUATOR_INDEX,
+  RED_RIGHT_BUMPER_ACTUATOR_INDEX,
+  BLUE_LEFT_BUMPER_ACTUATOR_INDEX,
+  BLUE_RIGHT_BUMPER_ACTUATOR_INDEX,
+  CENTRAL_SPINNER_ACTUATOR_INDEX,
+  NUM_ACTUATORS
+};
+SLAVE_STATES[ACTUATOR_CONTROLLER_SLAVE_INDEX] = {
+    // Actuator Controller States (I2C Address 9)
+    // Actuator index follows actuatorIndex
+    // Represents the actuator state: 0 is off, 1 means trigger. (spinner can have pos/neg spin)
+    0,
+    0,
+    0,
+    0,
+    0
+};
+enum ledIndex {
+  RED_LEFT_GOAL_PADDLE_LED_INDEX,
+  RED_RIGHT_GOAL_PADDLE_LED_INDEX,
+  RED_LEFT_BOTTOM_PADDLE_LED_INDEX,
+  RED_RIGHT_BOTTOM_PADDLE_LED_INDEX,
+  RED_LEFT_TOP_PADDLE_LED_INDEX,
+  RED_RIGHT_TOP_PADDLE_LED_INDEX,
+  RED_LEFT_BUMPER_LED_INDEX,
+  RED_RIGHT_BUMPER_LED_INDEX,
+  BLUE_LEFT_GOAL_PADDLE_LED_INDEX,
+  BLUE_RIGHT_GOAL_PADDLE_LED_INDEX,
+  BLUE_LEFT_BOTTOM_PADDLE_LED_INDEX,
+  BLUE_RIGHT_BOTTOM_PADDLE_LED_INDEX,
+  BLUE_LEFT_TOP_PADDLE_LED_INDEX,
+  BLUE_RIGHT_TOP_PADDLE_LED_INDEX,
+  BLUE_LEFT_BUMPER_LED_INDEX,
+  BLUE_RIGHT_BUMPER_LED_INDEX,
+  CENTRAL_SPINNER_LED_INDEX,
+  BORDER,
+  NUM_LEDS
+};
+SLAVE_STATES[LED_CONTROLLER_SLAVE_INDEX] = {
+    // LED Controller States (I2C Address 10)
+    // Light index follows ledIndex enum
+    // Represents the light state to be sent to LED controller (0 means idle, 1 means trigger) (spinner can have direction, border have score ratio)
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+};
+
+/*******************************************************************************************
+ * FUNCTIONS: DEFINING WHAT TO RUN PER SLAVE BOARD
+ *******************************************************************************************/
+void raspiSlaveFunction() {
+  int address = RASPI_SLAVE_INDEX+8;
+  // TODO: how many bytes?
+  int informationByteLength = 1; // how many bytes long is each transmission
+
+  // Request and read data from slave
+  Wire.requestFrom(address, informationByteLength);
+  while (Wire.available()){ // Slave may send less than informationByteLength
+    int data = Wire.read();
+    SLAVE_STATES[RASPI_SLAVE_INDEX] = data;
+  }
+  // Update necessary global variables (if necessary), coordinates can be directly accessed from this global variable list
+  // Such as SLAVE_STATES[RASPI_SLAVE_INDEX][X_COORDINATE_INDEX]
+}
 
 // Functions used for slaves (One for each)
 void sampleSlaveInputFromMaster() {
