@@ -25,6 +25,8 @@ Each information can be a single byte, or can have multiple information merged i
 ## What will the slave do
 When receiving the information, it should parse the game state and each Solenoid or LED's state. 
 
+Slaves can assume all commands are sent exactly as what
+
 ### Solenoid
 Solenoid will just be a flip on or flip off operation (1 or 0). 
 
@@ -39,6 +41,8 @@ So the master will send a "flipper on" message every "pressing edge" of the butt
 - If the flipper is off, start a 250 ms timer
 - If the timer reached zero, turn off.
 
+**EDIT:** Now, this timing action is done on the master, due to LED and Flippers both requiring same delay. Only on the "edge" of trigger we send "1".
+
 #### Bumpers
 Computer controlled obstacles, it will do the same thing as the flippers. Only this case, the master wouldn't be that worried about only sending info on the "rising edge", it just keeps sending. 
 
@@ -51,5 +55,9 @@ Make an array, using the LED enum as index, that stores the LED's start index an
 
 Each LED state will be coded as an enum.
 
+There will be likely 18 LEDs: 4 flippers, 8 bumpers, 4 wall bumpers, 1 central spinner, and 1 outer ring light.
+
 #### LED STATES
-States can include: solid colour (R, G, B, ...), OFF, Flashing, Progress bar...
+States can include: Triggered, In-game not triggered, and not in game.
+
+Special lights can have more states, such as the central light having a clockwise and counterclockwise spinning direction, and the edge light needing the game score. 
