@@ -116,7 +116,7 @@ void loop() {
     first_test = false;
   }
 
-  delay(1);
+  delay(1000);
 
   /*FSM state change code*/
   /*the loop thru all functions and run them*/

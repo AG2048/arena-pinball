@@ -5,10 +5,13 @@
 #include <FastLED.h>
 #include <Wire.h>
 
-int len = 6, numStrips = 1;
-int input[16], ledState[16];
-int count[16], state;
-struct CRGB leds[16][6], colour;
+const int len = 6, NUM_STRIPS = 1,
+          MAX_STRIP_LEN =
+              32;  // remember to update max_len when changing len array
+int input[NUM_STRIPS], ledState[NUM_STRIPS];
+int count[NUM_STRIPS], state = 0;
+max = ... FILEfor i in range()... find max struct CRGB leds[NUM_STRIPS][6],
+    colour;
 
 /*
  * GLOBAL VARIABLES: SETUP FOR ALL DEVICES:
@@ -40,6 +43,10 @@ bool isBumper(int x) {
   if (x == 6 || x == 7 || x == 14 || x == 15) return true;
   return false;
 }
+
+/**************************************************
+ * LED CONTROL FUNCTIONS FOR LED STRIP AT INDEX i *
+ **************************************************/
 
 void sequentialLed(int i) {  // must set led state back to 0 after duration
   for (int j = 0; j < len; j++) {
@@ -104,7 +111,7 @@ void loop() {
   digitalWrite(LED_BUILTIN, state);
   // Perform Normal Function Here
   if (state == 0) {  // game idle
-
+    for (int i = 0; i < len; i++) leds[0][i] = CRGB(255, 0, 255);
   } else if (state == 1) {  // game ongoing
     for (int i = 0; i < numStrips; i++) {
       if (isRed(i)) {
@@ -114,15 +121,16 @@ void loop() {
       }
 
       if (input[i] == 1) {
+        input[i] = 0;
         ledState[i] = 1;
         count[i] = 0;
       }
 
       if (ledState[i] == 1) {
         if (isPaddle(i)) {
-          sequentialLed(i);
-        } else if (isBumper(i)) {
           blinkLed(i);
+        } else if (isBumper(i)) {
+          sequentialLed(i);
         } else {  // spinners and border
         }
       } else {
